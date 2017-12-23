@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2017-12-23 Sat 14:21 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Benchmark of Python JSON libraries</title>
+<meta name="generator" content="Org mode" />
+<meta name="author" content="Yen, Tzu-Hsi(d2207197)" />
+<link rel="stylesheet" type="text/css" href="../org.css"/>
+<script type="text/javascript">
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this tag.
+
+Copyright (C) 2012-2017 Free Software Foundation, Inc.
+
+The JavaScript code in this tag is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code in this tag.
+*/
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+</head>
+<body>
+<div id="content">
+<h1 class="title">Benchmark of Python JSON libraries
+<br />
+<span class="subtitle">Comparing the performance of builtin json, simplejson, ujson, pyrapidjson</span>
+</h1>
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#org052f488">Related articles</a></li>
+<li><a href="#org122cfb1">Libraries</a></li>
+<li><a href="#orgec84414">Data</a></li>
+<li><a href="#orgad3cedb">Code</a></li>
+<li><a href="#org6713e6f">Python 2</a></li>
+<li><a href="#org23dbefa">Python 3</a></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org052f488" class="outline-2">
+<h2 id="org052f488">Related articles</h2>
+<div class="outline-text-2" id="text-org052f488">
+<p>
+After I finished this benchmark, I found that someone else have done that.
+</p>
+
+<ul class="org-ul">
+<li><a href="http://artem.krylysov.com/blog/2015/09/29/benchmark-python-json-libraries/">http://artem.krylysov.com/blog/2015/09/29/benchmark-python-json-libraries/</a></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org122cfb1" class="outline-2">
+<h2 id="org122cfb1">Libraries</h2>
+<div class="outline-text-2" id="text-org122cfb1">
+<ul class="org-ul">
+<li><a href="https://pypi.python.org/pypi/python-rapidjson"><code>json</code></a> from Python 2.7.11, Python 3.5.2</li>
+<li><a href="https://pypi.python.org/pypi/simplejson"><code>simplejson</code></a> 3.8.2 for both Python23</li>
+<li><a href="https://pypi.python.org/pypi/ujson"><code>ujson</code></a> 1.35 for both Python2/3</li>
+<li><a href="https://pypi.python.org/pypi/pyrapidjson"><code>pyrapidjson</code></a> 0.4.1 for Python2 and <a href="https://pypi.python.org/pypi/python-rapidjson">python-rapidjson</a> 0.0.6 for Python3</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orgec84414" class="outline-2">
+<h2 id="orgec84414">Data</h2>
+<div class="outline-text-2" id="text-orgec84414">
+<p>
+This benchmark is based on a JSON file generated from <a href="https://www.mockaroo.com/">mockaroo</a>. The
+<code>MOCK_DATA.json</code> contains is in JSONlines format with the following schema.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-json"><span class="org-rainbow-delimiters-depth-1">{</span><span class="org-keyword">"id"</span>:"<span class="org-highlight-numbers-number">3dEo7g</span>", 
+ <span class="org-keyword">"name"</span>:<span class="org-string">"&#38634;&#20029;"</span>,
+ <span class="org-keyword">"email"</span>:<span class="org-string">"pparker0@zdnet.com"</span>,
+ <span class="org-keyword">"gender"</span>:<span class="org-string">"Male"</span>,
+ <span class="org-keyword">"ip_address"</span>:"<span class="org-highlight-numbers-number">95</span>.<span class="org-highlight-numbers-number">67</span>.<span class="org-highlight-numbers-number">42</span>.<span class="org-highlight-numbers-number">121</span>",
+ <span class="org-keyword">"age"</span>:<span class="org-highlight-numbers-number">37</span>,
+ <span class="org-keyword">"created"</span>:<span class="org-highlight-numbers-number">1294204805</span>,
+ <span class="org-keyword">"money"</span>:<span class="org-highlight-numbers-number">47155</span><span class="org-rainbow-delimiters-depth-1">}</span>
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgad3cedb" class="outline-2">
+<h2 id="orgad3cedb">Code</h2>
+<div class="outline-text-2" id="text-orgad3cedb">
+<div class="org-src-container">
+<pre class="src src-python"><span class="org-keyword">from</span> __future__ <span class="org-keyword">import</span> print_function
+<span class="org-keyword">import</span> timeit
+<span class="org-keyword">import</span> json
+<span class="org-keyword">import</span> sys
+<span class="org-keyword">import</span> simplejson
+<span class="org-keyword">import</span> ujson
+<span class="org-keyword">import</span> rapidjson
+<span class="org-keyword">with</span> <span class="org-builtin">open</span><span class="org-rainbow-delimiters-depth-1">(</span><span class="org-string">'/Users/joe/Downloads/MOCK_DATA.json'</span><span class="org-rainbow-delimiters-depth-1">)</span> <span class="org-keyword">as</span> f:
+    <span class="org-variable-name">jsons</span> = f.readlines<span class="org-rainbow-delimiters-depth-1">()</span>
+
+<span class="org-keyword">print</span><span class="org-rainbow-delimiters-depth-1">(</span><span class="org-string">'line_count'</span>, <span class="org-builtin">len</span><span class="org-rainbow-delimiters-depth-2">(</span>jsons<span class="org-rainbow-delimiters-depth-2">)</span><span class="org-rainbow-delimiters-depth-1">)</span>
+
+<span class="org-keyword">print</span><span class="org-rainbow-delimiters-depth-1">(</span><span class="org-string">'json'</span>,
+      timeit.timeit<span class="org-rainbow-delimiters-depth-2">(</span><span class="org-keyword">lambda</span>: <span class="org-rainbow-delimiters-depth-3">[</span>json.loads<span class="org-rainbow-delimiters-depth-4">(</span>json_str<span class="org-rainbow-delimiters-depth-4">)</span> <span class="org-keyword">for</span> json_str <span class="org-keyword">in</span> jsons<span class="org-rainbow-delimiters-depth-3">]</span>,
+                    number=<span class="org-highlight-numbers-number">1000</span><span class="org-rainbow-delimiters-depth-2">)</span><span class="org-rainbow-delimiters-depth-1">)</span>
+<span class="org-keyword">print</span><span class="org-rainbow-delimiters-depth-1">(</span><span class="org-string">'simplejson'</span>,
+      timeit.timeit<span class="org-rainbow-delimiters-depth-2">(</span><span class="org-keyword">lambda</span>: <span class="org-rainbow-delimiters-depth-3">[</span>simplejson.loads<span class="org-rainbow-delimiters-depth-4">(</span>json_str<span class="org-rainbow-delimiters-depth-4">)</span> <span class="org-keyword">for</span> json_str <span class="org-keyword">in</span> jsons<span class="org-rainbow-delimiters-depth-3">]</span>,
+                    number=<span class="org-highlight-numbers-number">1000</span><span class="org-rainbow-delimiters-depth-2">)</span><span class="org-rainbow-delimiters-depth-1">)</span>
+<span class="org-keyword">print</span><span class="org-rainbow-delimiters-depth-1">(</span><span class="org-string">'ujson'</span>,
+      timeit.timeit<span class="org-rainbow-delimiters-depth-2">(</span><span class="org-keyword">lambda</span>: <span class="org-rainbow-delimiters-depth-3">[</span>ujson.loads<span class="org-rainbow-delimiters-depth-4">(</span>json_str<span class="org-rainbow-delimiters-depth-4">)</span> <span class="org-keyword">for</span> json_str <span class="org-keyword">in</span> jsons<span class="org-rainbow-delimiters-depth-3">]</span>,
+                    number=<span class="org-highlight-numbers-number">1000</span><span class="org-rainbow-delimiters-depth-2">)</span><span class="org-rainbow-delimiters-depth-1">)</span>
+<span class="org-keyword">print</span><span class="org-rainbow-delimiters-depth-1">(</span><span class="org-string">'rapidjson'</span>,
+      timeit.timeit<span class="org-rainbow-delimiters-depth-2">(</span><span class="org-keyword">lambda</span>: <span class="org-rainbow-delimiters-depth-3">[</span>rapidjson.loads<span class="org-rainbow-delimiters-depth-4">(</span>json_str<span class="org-rainbow-delimiters-depth-4">)</span> <span class="org-keyword">for</span> json_str <span class="org-keyword">in</span> jsons<span class="org-rainbow-delimiters-depth-3">]</span>,
+                    number=<span class="org-highlight-numbers-number">1000</span><span class="org-rainbow-delimiters-depth-2">)</span><span class="org-rainbow-delimiters-depth-1">)</span>
+</pre>
+</div>
+</div>
+</div>
+
+
+<div id="outline-container-org6713e6f" class="outline-2">
+<h2 id="org6713e6f">Python 2</h2>
+<div class="outline-text-2" id="text-org6713e6f">
+<p>
+The built-in <code>json</code> in Python 2 is a old version of <code>simplejson</code>. It was added to standard library
+in 2.6. Since that, simplejson updates more frequently. Now it is faster than
+the built-in json package.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-bash" id="orgdfcd59a">/usr/local/bin/python2.7 python-json-benchmark.py
+</pre>
+</div>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-right" />
+</colgroup>
+<tbody>
+<tr>
+<td class="org-left">line<sub>count</sub></td>
+<td class="org-right">1000</td>
+</tr>
+
+<tr>
+<td class="org-left">json</td>
+<td class="org-right">10.3980951309</td>
+</tr>
+
+<tr>
+<td class="org-left">simplejson</td>
+<td class="org-right">6.32259511948</td>
+</tr>
+
+<tr>
+<td class="org-left">ujson</td>
+<td class="org-right">2.06395411491</td>
+</tr>
+
+<tr>
+<td class="org-left">rapidjson</td>
+<td class="org-right">3.22467398643</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<div id="outline-container-org23dbefa" class="outline-2">
+<h2 id="org23dbefa">Python 3</h2>
+<div class="outline-text-2" id="text-org23dbefa">
+<p>
+The built-in json package in python 3 have a significant performance improvement.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-bash" id="orgfee049a">python python-json-benchmark.py
+</pre>
+</div>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-right" />
+</colgroup>
+<tbody>
+<tr>
+<td class="org-left">line<sub>count</sub></td>
+<td class="org-right">1000</td>
+</tr>
+
+<tr>
+<td class="org-left">json</td>
+<td class="org-right">5.528214392994414</td>
+</tr>
+
+<tr>
+<td class="org-left">simplejson</td>
+<td class="org-right">6.396655496006133</td>
+</tr>
+
+<tr>
+<td class="org-left">ujson</td>
+<td class="org-right">2.232110601005843</td>
+</tr>
+
+<tr>
+<td class="org-left">rapidjson</td>
+<td class="org-right">3.6435540420061443</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="author">Author: Yen, Tzu-Hsi(d2207197)</p>
+<p class="date">Created: 2017-12-23 Sat 14:21</p>
+<p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
+</div>
+</body>
+</html>
